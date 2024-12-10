@@ -4,6 +4,9 @@ import Victory from '../../assets/victory.svg'
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import {apiClient} from '@/lib/api-client'
+import { SIGNUP_ROUTE } from '@/utils/constants';
 
 const AuthIndex = () => {
 
@@ -11,8 +14,39 @@ const AuthIndex = () => {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
+  const validateSignup = () => {
+    if(!email.length){
+      toast.error("Email is required")
+      return false
+    }
+    if(!password.length){
+      toast.error("Password is required")
+      return false
+    }
+    if(password!==confirmPassword){
+      toast.error("Password and confirm password should match")
+      // console.log(password,confirmPassword);
+      return false
+    }
+    return true
+  }
+
   const handleLogin = async() => {};
-  const handleSignup = async() => {};
+  const handleSignup = async() => {
+
+    if(validateSignup()){
+      try {
+        const res = await apiClient.post(SIGNUP_ROUTE,{email,password})
+        console.log({res});
+        //console.log('SIGNUP_ROUTE:', SIGNUP_ROUTE);
+        // console.log('Email:', email);
+        //console.log('Password:', password);
+      } catch (error) {
+        console.log("Signup error::",error);
+      }
+
+    }
+  };
 
   return (
     <div className="h-[100vh] w-[100vw] flex items-center justify-center">
@@ -43,7 +77,7 @@ const AuthIndex = () => {
                 <TabsContent className='flex flex-col gap-5 ' value='signup'>
                   <Input placeholder='Email' type='email' className='rounded-full p-6 ' value={email} onChange={e=>setEmail(e.target.value)}/>
                   <Input placeholder='Password' type='password' className='rounded-full p-6 ' value={password} onChange={e=>setPassword(e.target.value)}/>
-                  <Input placeholder='Confirm Password' type='confirm-password' className='rounded-full p-6 ' value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)}/>
+                  <Input placeholder='Confirm Password' type='password' className='rounded-full p-6 ' value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)}/>
                   <Button className='rounded-full p-6' onClick={handleSignup}>Signup</Button>
                 </TabsContent>
               </Tabs>

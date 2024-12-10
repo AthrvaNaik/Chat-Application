@@ -5,7 +5,7 @@ import generateTokenAndSetCookie from "../Utils/generateToken.js";
 export const signup = async (req, res) => {
   try {
     const { fullName, username, password, confirmPassword, gender } =
-      await req.body;
+       req.body;
 
     // console.log(req.body);
 
