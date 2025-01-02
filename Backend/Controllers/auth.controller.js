@@ -49,30 +49,75 @@ export const signup = async (req, res) => {
   }
 };
 
+// export const login = async (req, res) => {
+//   try {
+//     const { username, password } = await req.body;
+//     const user = await User.findOne({ username });
+//     const isPasswordMatch = await bcryptjs.compare(password, user?.password||"");
+
+//     if(!user || !isPasswordMatch){
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
+
+//     generateTokenAndSetCookie(user._id,res);
+
+//     res.status(200).json({
+//       _id: user._id,
+//       fullName: user.fullName,
+//       username: user.username,
+//       profilePic: user.profilePic,
+//     })
+
+//   } catch (error) {
+//     console.log("LoginError::", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 export const login = async (req, res) => {
   try {
-    const { username, password } = await req.body;
-    const user = await User.findOne({ username });
-    const isPasswordMatch = await bcryptjs.compare(password, user?.password||"");
+    const { username, password } = req.body;
 
-    if(!user || !isPasswordMatch){
-      return res.status(401).json({ error: "Invalid credentials" });
+    // Validate request body
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password are required" });
     }
 
-    generateTokenAndSetCookie(user._id,res);
+    // Find user in the database
+    const user = await User.findOne({ username });
 
+    // Check if the user exists
+    if (!user) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    // Ensure password exists in the user object
+    if (!user.password) {
+      console.error("LoginError:: Password is missing in the database for this user.");
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    // Compare passwords
+    const isPasswordMatch = await bcryptjs.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    // Generate token and set cookie
+    generateTokenAndSetCookie(user._id, res);
+
+    // Return user data
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
       username: user.username,
       profilePic: user.profilePic,
-    })
-
+    });
   } catch (error) {
-    console.log("LoginError::", error.message);
+    console.error("LoginError::", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 export const logout = async (req, res) => {
   try {
