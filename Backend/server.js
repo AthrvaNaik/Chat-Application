@@ -8,11 +8,12 @@ import userRoutes from "./Routes/user.routes.js";
 import connectDB from "./DB/connect.js";
 import cookieParser from "cookie-parser";
 
+import { app as socketApp, server, io } from "./Socket/socket.js"; // Rename 'app' to 'socketApp'
 
-const app = express();
+const app = express(); // No conflict now
 
 // Middleware: Parse JSON and cookies
-app.use(express.json()); // Correct placement: Before routes
+app.use(express.json());
 app.use(cookieParser());
 
 // Connect to the database
