@@ -69,7 +69,7 @@ A real-time chat application built using the MERN stack (MongoDB, Express.js, Re
 5. Access the application:
    Open your browser and navigate to `http://localhost:3000`.
 
-## Folder Structure
+
 
 ## Features in Detail
 
